@@ -13,14 +13,19 @@ type TCPServer struct {
 	sig      chan byte
 
 	readBufLimit   uint16
-	ClientMessages chan []byte
+	ClientMessages chan *ClientMessage
+}
+
+type ClientMessage struct {
+	Client  net.Conn
+	Message []byte
 }
 
 func NewTCPServer(addr string) *TCPServer {
 	return &TCPServer{
 		addr:           addr,
 		readBufLimit:   1024,
-		ClientMessages: make(chan []byte),
+		ClientMessages: make(chan *ClientMessage),
 	}
 }
 
@@ -37,6 +42,8 @@ func (s *TCPServer) Start() error {
 	defer s.listener.Close()
 
 	go s.accptConnecitonLoop()
+
+	fmt.Println("the tcp server is now listening to incoming tcp events")
 
 	<-s.sig
 
@@ -78,7 +85,10 @@ func (s *TCPServer) reader(connState net.Conn) {
 			continue
 		}
 
-		s.ClientMessages <- buf[:size]
+		s.ClientMessages <- &ClientMessage{
+			Client:  connState,
+			Message: buf[:size],
+		}
 
 	}
 }

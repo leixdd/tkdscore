@@ -13,6 +13,6 @@ func main() {
 	gameServer.TCPServer = tcpServer
 
 	go gameServer.ListenEvents()
+	go gameServer.TCPServer.Start()
 
-	gameServer.TCPServer.Start()
 }

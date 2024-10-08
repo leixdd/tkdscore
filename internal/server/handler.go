@@ -2,10 +2,8 @@ package gameserver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/leixddd/jtkdscore/_common"
-	"github.com/leixddd/jtkdscore/internal/client"
 	tcpserver "github.com/leixddd/jtkdscore/internal/tcp/server"
 )
 
@@ -44,11 +42,6 @@ type Player struct {
 	Name       string
 	Penalties  uint8
 	PlayerType PlayerType
-}
-
-type Judge struct {
-	Name             string
-	ControllerClient *client.GameClient
 }
 
 type Score struct {
@@ -90,17 +83,17 @@ func (gs *GameServer) ListenEvents() {
 	}
 }
 
-func (gs *GameServer) handleTCPCommands(clientMessage []byte) {
+func (gs *GameServer) handleTCPCommands(clientMessage *tcpserver.ClientMessage) {
 
-	size := len(clientMessage)
+	size := len(clientMessage.Message)
 
 	if size == 0 {
 		return
 	}
 
-	switch clientMessage[0] {
+	switch clientMessage.Message[0] {
 	case _common.SERVER_EVENT_JOIN_ROOM:
-		fmt.Println("from client: ", string(clientMessage[1:size]))
+		payload := string(clientMessage.Message[1:size])
 
 	}
 
